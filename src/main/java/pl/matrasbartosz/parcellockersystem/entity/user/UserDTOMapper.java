@@ -8,6 +8,7 @@ public class UserDTOMapper {
         User user = new User();
         user.setName(userDTO.getName());
         user.setSurname(userDTO.getSurname());
+        user.setPassword(userDTO.getPassword());
         user.setEmail(userDTO.getEmail());
         user.setPhoneNumber(userDTO.getPhoneNumber());
         user.setAddress(returnAddress(userDTO));
@@ -29,10 +30,11 @@ public class UserDTOMapper {
 
     public static UserDTO mapUserToUserDTO(User user) {
         UserDTO userDTO = new UserDTO();
-        userDTO.setName(userDTO.getName());
-        userDTO.setSurname(userDTO.getSurname());
-        userDTO.setEmail(userDTO.getEmail());
-        userDTO.setPhoneNumber(userDTO.getPhoneNumber());
+        userDTO.setId(user.getId());
+        userDTO.setName(user.getName());
+        userDTO.setSurname(user.getSurname());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setPhoneNumber(user.getPhoneNumber());
         userDTO.setCountry(user.getAddress().getCountry());
         userDTO.setState(user.getAddress().getState());
         userDTO.setCity(user.getAddress().getCity());

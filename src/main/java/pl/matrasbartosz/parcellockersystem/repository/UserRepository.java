@@ -14,6 +14,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
             " left join fetch u.address")
     List<User> findAllUsers(Pageable pageable);
 
+    Optional<User> findUserByEmailAndPhoneNumber(String email, String phoneNumber);
     Optional<User> findUserByEmail(String email);
 
 }
