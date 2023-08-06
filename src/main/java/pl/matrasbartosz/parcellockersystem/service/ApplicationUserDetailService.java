@@ -1,16 +1,16 @@
 package pl.matrasbartosz.parcellockersystem.service;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.matrasbartosz.parcellockersystem.entity.user.ApplicationUserDetails;
-import pl.matrasbartosz.parcellockersystem.entity.user.Attempts;
 import pl.matrasbartosz.parcellockersystem.entity.user.User;
-import pl.matrasbartosz.parcellockersystem.repository.UserRepository;
-import pl.matrasbartosz.parcellockersystem.repository.user.AttemptsRepository;
+import pl.matrasbartosz.parcellockersystem.repository.user.UserRepository;
 
 import java.util.Optional;
 
@@ -18,17 +18,20 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ApplicationUserDetailService implements UserDetailsService {
 
+    private final Logger logger = LoggerFactory.getLogger(ApplicationUserDetailService.class);
+
     private final UserRepository userRepository;
-    private final AttemptsRepository attemptsRepository;
+    private final AttemptService attemptService;
 
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<User> optionalUser = userRepository.findUserByEmail(email);
-        if (optionalUser.isEmpty()) {
-            throw new UsernameNotFoundException("Username not found");
+    public UserDetails loadUserByUsername(String email) {
+        Optional<User> userByEmail = this.userRepository.findUserByEmail(email);
+        if (userByEmail.isPresent()) {
+            this.attemptService.updateAttempt(email);
+            return new ApplicationUserDetails(userByEmail.get());
         }
-
-        return new ApplicationUserDetails(optionalUser.get());
+        logger.error("User not found: {}", email);
+        throw new UsernameNotFoundException("User not found: " + email);
     }
 }
